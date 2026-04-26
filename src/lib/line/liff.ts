@@ -21,13 +21,13 @@ export async function getLiffProfile() {
   }
 
   const profile = await liff.getProfile()
-  const idToken = liff.getIDToken()
+  const accessToken = liff.getAccessToken()
 
   return {
     userId: profile.userId,
     displayName: profile.displayName,
     pictureUrl: profile.pictureUrl,
-    idToken,
+    accessToken,
   }
 }
 

@@ -18,6 +18,8 @@ type AuthState = {
   error: string | null
 }
 
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
+
 export function useAuth(): AuthState {
   const [employee, setEmployee] = useState<Employee | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -46,18 +48,19 @@ export function useAuth(): AuthState {
         // ถ้าไม่มี session → login ด้วย LIFF
         const profile = await getLiffProfile()
 
-        if (!profile?.idToken) {
+        if (!profile?.accessToken) {
           setError('ไม่สามารถ login ด้วย LINE ได้')
           setIsLoading(false)
           return
         }
 
-        // ส่ง idToken ไปยัง Edge Function
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-        const res = await fetch(`${supabaseUrl}/functions/v1/line-auth`, {
+        // ส่ง accessToken ไปยัง Edge Function
+        const res = await fetch(`${SUPABASE_URL}/functions/v1/line-auth`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idToken: profile.idToken }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ accessToken: profile.accessToken }),
         })
 
         if (!res.ok) {

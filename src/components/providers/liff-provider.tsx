@@ -7,7 +7,7 @@ type LiffProfile = {
   userId: string
   displayName: string
   pictureUrl?: string
-  idToken: string | null
+  accessToken: string | null
 } | null
 
 type LiffContextType = {
