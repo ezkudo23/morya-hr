@@ -41,6 +41,16 @@ export function LeaveRequestForm({
   const [attachmentUrl,   setAttachmentUrl]   = useState('')
   const [result,          setResult]          = useState<SubmitLeaveResult | null>(null)
 
+  // แปลงวันที่เป็นภาษาไทย
+  const toThaiDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    return new Date(dateStr).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }
+
   // คำนวณจำนวนวัน
   const calcDays = () => {
     if (isHalfDay) return 0.5
@@ -102,7 +112,7 @@ export function LeaveRequestForm({
     )
   }
 
-  // ─── Error State ──────────────────────────────
+  // ─── Error Messages ───────────────────────────
   const ERROR_MESSAGES: Record<string, string> = {
     INSUFFICIENT_BALANCE:       `โควต้าไม่พอ — เหลือ ${result?.remaining ?? 0} วัน`,
     BACKDATE_WINDOW_EXCEEDED:   'ลาย้อนหลังได้ไม่เกิน 3 วัน',
@@ -218,7 +228,7 @@ export function LeaveRequestForm({
         )}
 
         {/* Date inputs */}
-        <div className={isHalfDay ? '' : 'flex flex-col gap-3'}>
+        <div className="flex flex-col gap-3">
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               {isHalfDay ? 'วันที่' : 'วันเริ่ม'}
@@ -232,6 +242,9 @@ export function LeaveRequestForm({
               }}
               className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
             />
+            {startDate && (
+              <p className="text-xs text-gray-400 mt-1">{toThaiDate(startDate)}</p>
+            )}
           </div>
           {!isHalfDay && (
             <div>
@@ -243,6 +256,9 @@ export function LeaveRequestForm({
                 onChange={(e) => setEndDate(e.target.value)}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
+              {endDate && (
+                <p className="text-xs text-gray-400 mt-1">{toThaiDate(endDate)}</p>
+              )}
             </div>
           )}
         </div>
