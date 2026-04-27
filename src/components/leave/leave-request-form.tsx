@@ -114,16 +114,16 @@ export function LeaveRequestForm({
 
   // ─── Error Messages ───────────────────────────
   const ERROR_MESSAGES: Record<string, string> = {
-    INSUFFICIENT_BALANCE:       `โควต้าไม่พอ — เหลือ ${result?.remaining ?? 0} วัน`,
-    BACKDATE_WINDOW_EXCEEDED:   'ลาย้อนหลังได้ไม่เกิน 3 วัน',
-    BACKDATE_SICK_ONLY:         'ลาย้อนหลังได้เฉพาะลาป่วยเท่านั้น',
-    ATTACHMENT_REQUIRED:        'ลาป่วย 3 วันขึ้นไปต้องแนบใบรับรองแพทย์',
-    HALF_DAY_NOT_SUPPORTED:     'ประเภทลานี้ไม่รองรับการลาครึ่งวัน',
-    PROBATION_NO_PERSONAL_LEAVE:'ช่วงทดลองงาน ลากิจถือเป็น LWP — ติดต่อ HR',
-    PROBATION_NO_ANNUAL_LEAVE:  'ลาพักร้อนได้หลังครบ 1 ปี',
-    PAST_DATE_NOT_ALLOWED:      'ไม่สามารถเลือกวันในอดีตได้',
-    INVALID_DATE_RANGE:         'วันที่ไม่ถูกต้อง',
-    NO_LEAVE_BALANCE:           'ไม่พบข้อมูล balance — ติดต่อ HR',
+    INSUFFICIENT_BALANCE:        `โควต้าไม่พอ — เหลือ ${result?.remaining ?? 0} วัน`,
+    BACKDATE_WINDOW_EXCEEDED:    'ลาย้อนหลังได้ไม่เกิน 3 วัน',
+    BACKDATE_SICK_ONLY:          'ลาย้อนหลังได้เฉพาะลาป่วยเท่านั้น',
+    ATTACHMENT_REQUIRED:         'ลาป่วย 3 วันขึ้นไปต้องแนบใบรับรองแพทย์',
+    HALF_DAY_NOT_SUPPORTED:      'ประเภทลานี้ไม่รองรับการลาครึ่งวัน',
+    PROBATION_NO_PERSONAL_LEAVE: 'ช่วงทดลองงาน ลากิจถือเป็น LWP — ติดต่อ HR',
+    PROBATION_NO_ANNUAL_LEAVE:   'ลาพักร้อนได้หลังครบ 1 ปี',
+    PAST_DATE_NOT_ALLOWED:       'ไม่สามารถเลือกวันในอดีตได้',
+    INVALID_DATE_RANGE:          'วันที่ไม่ถูกต้อง',
+    NO_LEAVE_BALANCE:            'ไม่พบข้อมูล balance — ติดต่อ HR',
   }
 
   return (
@@ -227,38 +227,45 @@ export function LeaveRequestForm({
           </div>
         )}
 
-        {/* Date inputs */}
+        {/* Date inputs — แสดงเป็นภาษาไทย ซ่อน native input */}
         <div className="flex flex-col gap-3">
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               {isHalfDay ? 'วันที่' : 'วันเริ่ม'}
             </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value)
-                if (e.target.value > endDate) setEndDate(e.target.value)
-              }}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            {startDate && (
-              <p className="text-xs text-gray-400 mt-1">{toThaiDate(startDate)}</p>
-            )}
+            <label className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm flex items-center justify-between cursor-pointer bg-white">
+              <span className={startDate ? 'text-gray-900' : 'text-gray-400'}>
+                {startDate ? toThaiDate(startDate) : 'เลือกวันที่'}
+              </span>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value)
+                  if (e.target.value > endDate) setEndDate(e.target.value)
+                }}
+                className="sr-only"
+              />
+              <span className="text-gray-400 text-xs">📅</span>
+            </label>
           </div>
+
           {!isHalfDay && (
             <div>
               <label className="text-xs text-gray-500 mb-1 block">วันสิ้นสุด</label>
-              <input
-                type="date"
-                value={endDate}
-                min={startDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-              {endDate && (
-                <p className="text-xs text-gray-400 mt-1">{toThaiDate(endDate)}</p>
-              )}
+              <label className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm flex items-center justify-between cursor-pointer bg-white">
+                <span className={endDate ? 'text-gray-900' : 'text-gray-400'}>
+                  {endDate ? toThaiDate(endDate) : 'เลือกวันที่'}
+                </span>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={startDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="sr-only"
+                />
+                <span className="text-gray-400 text-xs">📅</span>
+              </label>
             </div>
           )}
         </div>
