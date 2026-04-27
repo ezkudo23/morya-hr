@@ -218,7 +218,7 @@ export function LeaveRequestForm({
         )}
 
         {/* Date inputs */}
-        <div className={isHalfDay ? '' : 'grid grid-cols-2 gap-3'}>
+        <div className={isHalfDay ? '' : 'flex flex-col gap-3'}>
           <div>
             <label className="text-xs text-gray-500 mb-1 block">
               {isHalfDay ? 'วันที่' : 'วันเริ่ม'}

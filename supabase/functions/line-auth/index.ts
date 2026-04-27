@@ -24,13 +24,11 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Verify accessToken กับ LINE
     const lineVerifyRes = await fetch(
       `https://api.line.me/oauth2/v2.1/verify?access_token=${accessToken}`
     )
     const lineVerifyBody = await lineVerifyRes.json()
     console.log('LINE verify status:', lineVerifyRes.status)
-    console.log('LINE verify body:', JSON.stringify(lineVerifyBody))
 
     if (!lineVerifyRes.ok) {
       return new Response(
@@ -39,7 +37,6 @@ Deno.serve(async (req) => {
       )
     }
 
-    // ดึง profile จาก LINE
     const lineProfileRes = await fetch('https://api.line.me/v2/profile', {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
@@ -57,26 +54,16 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('LINE User ID:', lineUserId)
-
-    // Debug service key
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
     const serviceKey = Deno.env.get('MY_SERVICE_KEY') ?? ''
-    console.log('SUPABASE_URL:', supabaseUrl)
-    console.log('Service key length:', serviceKey.length)
-    console.log('Service key prefix:', serviceKey.substring(0, 30))
-
-    // สร้าง Supabase client
     const supabase = createClient(supabaseUrl, serviceKey)
 
-    // หา employee จาก line_user_id ผ่าน RPC (bypass RLS)
     const { data: employees, error: empError } = await supabase
-     .rpc('get_employee_by_line_id', { p_line_user_id: lineUserId })
+      .rpc('get_employee_by_line_id', { p_line_user_id: lineUserId })
 
     const employee = employees?.[0] ?? null
 
     console.log('Employee found:', employee ? employee.nickname : 'not found')
-    console.log('Employee error:', empError ? empError.message : 'none')
 
     if (empError || !employee) {
       return new Response(
@@ -88,14 +75,12 @@ Deno.serve(async (req) => {
       )
     }
 
-    // หา profile ผ่าน RPC (bypass RLS)
-     const { data: profiles, error: profileError } = await supabase
+    const { data: profiles, error: profileError } = await supabase
       .rpc('get_profile_by_employee_id', { p_employee_id: employee.id })
 
     const profile = profiles?.[0] ?? null
 
     console.log('Profile found:', profile ? profile.role : 'not found')
-    console.log('Profile error:', profileError ? profileError.message : 'none')
 
     if (!profile?.is_active) {
       return new Response(
@@ -104,7 +89,6 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Sign in หรือ Sign up
     const email = `${lineUserId}@line.morya.co.th`
 
     const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
@@ -115,6 +99,26 @@ Deno.serve(async (req) => {
     console.log('Sign in error:', signInError ? signInError.message : 'none')
 
     let session = signInData?.session
+
+    // Update user_metadata ทุกครั้งที่ login
+    if (signInData?.user) {
+      await supabase.auth.admin.updateUserById(signInData.user.id, {
+        user_metadata: {
+          line_user_id: lineUserId,
+          display_name: displayName,
+          picture_url: pictureUrl,
+          employee_id: employee.id,
+          role: profile.role,
+        },
+      })
+
+      // ดึง session ใหม่หลัง update metadata
+      const { data: refreshed } = await supabase.auth.signInWithPassword({
+        email,
+        password: lineUserId,
+      })
+      session = refreshed?.session
+    }
 
     if (signInError) {
       const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
@@ -147,7 +151,6 @@ Deno.serve(async (req) => {
       session = newSignIn?.session
     }
 
-    // Update last_login
     await supabase
       .from('profiles')
       .update({ last_login: new Date().toISOString() })
