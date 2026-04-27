@@ -35,6 +35,7 @@ export function useAuth(): AuthState {
 
         if (session) {
           const meta = session.user.user_metadata
+          console.log('user_metadata:', meta)
           setEmployee({
             id: meta.employee_id,
             code: null,
