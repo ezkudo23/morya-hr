@@ -46,7 +46,7 @@ export default function LeavePage() {
   }
 
   // ─── PC Staff — ไม่มีสิทธิ์ลา ─────────────────
-  if (employee.employment_type === 'pc') {
+  if (employee.role === 'pc_staff') {
     return (
       <div className="flex items-center justify-center min-h-screen px-6">
         <div className="text-center space-y-2">
@@ -109,7 +109,7 @@ export default function LeavePage() {
           </h1>
           {view === 'balance' && balance && (
             <p className="text-xs text-gray-400 mt-0.5">
-              {employee.first_name} · ปี {balance.year + 543}
+              {employee.nickname ?? employee.code} · ปี {balance.year + 543}
               {balance.is_probation && (
                 <span className="ml-2 text-amber-500">ทดลองงาน</span>
               )}
