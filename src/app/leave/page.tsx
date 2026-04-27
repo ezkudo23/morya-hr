@@ -23,7 +23,8 @@ export default function LeavePage() {
     submitting,
     submitLeave,
   } = useLeave(employee?.id ?? null)
-
+    console.log('auth:', { employee, authLoading })
+    console.log('balance:', { balance, loadingBalance })
   // ─── Loading ──────────────────────────────────
   if (authLoading) {
     return (
