@@ -1,6 +1,3 @@
-// app/approve/page.tsx
-// หน้าหลัก Supervisor/HR/Owner — อนุมัติคำขอลา
-
 'use client'
 
 import { useAuth } from '@/hooks/use-auth'
@@ -11,10 +8,8 @@ const ALLOWED_ROLES = ['supervisor', 'hr_admin', 'owner', 'owner_delegate']
 
 export default function ApprovePage() {
   const { employee, isLoading: authLoading } = useAuth()
-
   const { approveLeave, approving } = useLeave(employee?.id ?? null)
 
-  // ─── Loading ──────────────────────────────────
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -23,7 +18,6 @@ export default function ApprovePage() {
     )
   }
 
-  // ─── No session ───────────────────────────────
   if (!employee) {
     return (
       <div className="flex items-center justify-center min-h-screen px-6">
@@ -35,7 +29,6 @@ export default function ApprovePage() {
     )
   }
 
-  // ─── Unauthorized ─────────────────────────────
   if (!ALLOWED_ROLES.includes(employee.role)) {
     return (
       <div className="flex items-center justify-center min-h-screen px-6">
@@ -49,26 +42,23 @@ export default function ApprovePage() {
     )
   }
 
-  // ─── Render ───────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-10">
         <h1 className="text-base font-medium text-gray-900">อนุมัติคำขอลา</h1>
         <p className="text-xs text-gray-400 mt-0.5">
-          {employee.nickname ?? employee.code} ·{' '}
-          {employee.role === 'supervisor'    && 'Supervisor'}
-          {employee.role === 'hr_admin'      && 'HR Admin'}
-          {employee.role === 'owner'         && 'Owner'}
-          {employee.role === 'owner_delegate'&& 'Owner Delegate'}
+          {employee.nickname ?? employee.code} -{' '}
+          {employee.role === 'supervisor'     && 'Supervisor'}
+          {employee.role === 'hr_admin'       && 'HR Admin'}
+          {employee.role === 'owner'          && 'Owner'}
+          {employee.role === 'owner_delegate' && 'Owner Delegate'}
         </p>
       </div>
 
-      {/* Content */}
       <div className="px-4 py-4 max-w-md mx-auto">
         <LeaveApproveList
-          approverId={employee.id}
+          approverId={employee.profile_id}
           onApprove={approveLeave}
           isApproving={approving}
         />

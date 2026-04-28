@@ -6,6 +6,7 @@ import { getLiffProfile } from '@/lib/line/liff'
 
 type Employee = {
   id: string
+  profile_id: string
   code: string | null
   nickname: string | null
   role: string
@@ -30,23 +31,21 @@ export function useAuth(): AuthState {
       try {
         const supabase = createClient()
 
-        // เช็ค session ที่มีอยู่แล้วก่อน
         const { data: { session } } = await supabase.auth.getSession()
 
         if (session) {
           const meta = session.user.user_metadata
-          console.log('user_metadata:', meta)
           setEmployee({
-            id: meta.employee_id,
-            code: null,
-            nickname: meta.display_name,
-            role: meta.role,
+            id:         meta.employee_id,
+            profile_id: session.user.id,
+            code:       null,
+            nickname:   meta.display_name,
+            role:       meta.role,
           })
           setIsLoading(false)
           return
         }
 
-        // ถ้าไม่มี session → login ด้วย LIFF
         const profile = await getLiffProfile()
 
         if (!profile?.accessToken) {
@@ -55,7 +54,6 @@ export function useAuth(): AuthState {
           return
         }
 
-        // ส่ง accessToken ไปยัง Edge Function
         const res = await fetch(`${SUPABASE_URL}/functions/v1/line-auth`, {
           method: 'POST',
           headers: {
@@ -73,13 +71,19 @@ export function useAuth(): AuthState {
 
         const { session: newSession, employee: emp } = await res.json()
 
-        // Set session ใน Supabase client
-        await supabase.auth.setSession({
-          access_token: newSession.access_token,
+        const supabaseClient = createClient()
+        await supabaseClient.auth.setSession({
+          access_token:  newSession.access_token,
           refresh_token: newSession.refresh_token,
         })
 
-        setEmployee(emp)
+        setEmployee({
+          id:         emp.id,
+          profile_id: newSession.user?.id ?? '',
+          code:       emp.code,
+          nickname:   emp.nickname,
+          role:       emp.role,
+        })
 
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Authentication error')
