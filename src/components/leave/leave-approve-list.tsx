@@ -28,8 +28,8 @@ interface PendingLeave {
 }
 
 interface LeaveApproveListProps {
-  approverId: string
-  onApprove:  (payload: ApproveLeavePayload) => Promise<ApproveLeaveResult>
+  approverId:  string
+  onApprove:   (payload: ApproveLeavePayload) => Promise<ApproveLeaveResult>
   isApproving: boolean
 }
 
@@ -95,7 +95,6 @@ export function LeaveApproveList({
     }
   }
 
-  // ─── Loading ──────────────────────────────────
   if (loading) {
     return (
       <div className="space-y-3">
@@ -106,23 +105,20 @@ export function LeaveApproveList({
     )
   }
 
-  // ─── Empty ────────────────────────────────────
   if (leaves.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center space-y-2">
-        <div className="text-4xl">✅</div>
+        <div className="text-4xl">OK</div>
         <p className="text-sm font-medium text-gray-700">ไม่มีคำขอลารออนุมัติ</p>
         <p className="text-xs text-gray-400">ทุกคำขอได้รับการดำเนินการแล้ว</p>
       </div>
     )
   }
 
-  // ─── Detail + Action ──────────────────────────
   if (selected) {
     if (actionDone) {
       return (
         <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
-          <div className="text-5xl">{actionDone === 'approved' ? '✅' : '❌'}</div>
           <p className="text-base font-semibold text-gray-900">
             {actionDone === 'approved' ? 'อนุมัติแล้ว' : 'ไม่อนุมัติแล้ว'}
           </p>
@@ -132,8 +128,6 @@ export function LeaveApproveList({
 
     return (
       <div className="space-y-4">
-
-        {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-gray-900">รายละเอียดคำขอ</h2>
           <button
@@ -144,12 +138,11 @@ export function LeaveApproveList({
           </button>
         </div>
 
-        {/* Info Card */}
         <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-2">
           <div className="flex justify-between">
             <span className="text-xs text-gray-500">พนักงาน</span>
             <span className="text-sm font-medium text-gray-900">
-              {selected.employee_name} · {selected.employee_code}
+              {selected.employee_name} - {selected.employee_code}
             </span>
           </div>
           <div className="flex justify-between">
@@ -162,10 +155,10 @@ export function LeaveApproveList({
             <span className="text-xs text-gray-500">วันที่</span>
             <span className="text-sm text-gray-900">
               {selected.is_half_day
-                ? `${toThaiDate(selected.start_date)} (${selected.half_day_period === 'morning' ? 'เช้า' : 'บ่าย'})`
+                ? toThaiDate(selected.start_date) + ' (' + (selected.half_day_period === 'morning' ? 'เช้า' : 'บ่าย') + ')'
                 : selected.start_date === selected.end_date
                   ? toThaiDate(selected.start_date)
-                  : `${toThaiDate(selected.start_date)} – ${toThaiDate(selected.end_date)}`
+                  : toThaiDate(selected.start_date) + ' - ' + toThaiDate(selected.end_date)
               }
             </span>
           </div>
@@ -181,13 +174,13 @@ export function LeaveApproveList({
           )}
           {selected.is_backdate && (
             <div className="rounded-lg bg-purple-50 px-3 py-1.5">
-              <p className="text-xs text-purple-700">⏪ ลาย้อนหลัง</p>
+              <p className="text-xs text-purple-700">ลาย้อนหลัง</p>
             </div>
           )}
           {selected.attachment_url && (
             <div className="flex justify-between items-center">
               <span className="text-xs text-gray-500">เอกสาร</span>
-              
+              <a
                 href={selected.attachment_url}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -200,7 +193,7 @@ export function LeaveApproveList({
           <div className="flex justify-between">
             <span className="text-xs text-gray-500">ขั้นอนุมัติ</span>
             <span className="text-xs text-gray-600">
-              Step {selected.approval_step}/{selected.approval_step_max} · {stepLabel(selected.approval_step)}
+              Step {selected.approval_step}/{selected.approval_step_max} - {stepLabel(selected.approval_step)}
             </span>
           </div>
           <div className="flex justify-between">
@@ -209,7 +202,6 @@ export function LeaveApproveList({
           </div>
         </div>
 
-        {/* Note */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-1 block">
             หมายเหตุ
@@ -224,7 +216,6 @@ export function LeaveApproveList({
           />
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3">
           <button
             onClick={() => handleAction('reject')}
@@ -251,12 +242,10 @@ export function LeaveApproveList({
             {isApproving ? 'กำลังดำเนินการ...' : 'อนุมัติ'}
           </button>
         </div>
-
       </div>
     )
   }
 
-  // ─── List ─────────────────────────────────────
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-400">
@@ -278,7 +267,7 @@ export function LeaveApproveList({
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">
-              {LEAVE_TYPE_LABELS[leave.leave_type]} · {leave.days} วัน
+              {LEAVE_TYPE_LABELS[leave.leave_type]} - {leave.days} วัน
             </span>
             <span className="text-xs text-gray-400">
               {toThaiDate(leave.start_date)}
