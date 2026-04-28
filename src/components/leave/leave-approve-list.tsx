@@ -63,9 +63,6 @@ export function LeaveApproveList({
       const { data, error } = await supabase.rpc('get_pending_leaves', {
         p_approver_id: approverId,
       })
-      console.log('approverId:', approverId)
-      console.log('get_pending_leaves result:', JSON.stringify(data))
-      console.log('error:', error)
       if (error) throw error
       if (data?.success) setLeaves(data.leaves ?? [])
     } catch (err) {
