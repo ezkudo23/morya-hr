@@ -102,21 +102,28 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
         </div>
       )}
 
-      {/* วันที่ */}
+{/* วันที่ */}
       <div className="space-y-1.5">
         <label className="text-xs font-medium text-gray-500">วันที่ทำ OT</label>
-        <input
-          type="date"
-          value={workDate}
-          max={today}
-          onChange={e => setWorkDate(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 appearance-none"
-        />
-        {workDate && (
-          <p className="text-xs text-gray-400 px-1">
-            {thaiDate(workDate)}
-          </p>
-        )}
+        <div className="relative">
+          <input
+            type="date"
+            value={workDate}
+            max={today}
+            onChange={e => setWorkDate(e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          />
+          <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white flex items-center justify-between">
+            <span className="text-gray-900">
+              {workDate
+                ? new Date(workDate).toLocaleDateString('th-TH', {
+                    year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
+                  })
+                : 'เลือกวันที่'}
+            </span>
+            <span className="text-gray-400 text-xs">📅</span>
+          </div>
+        </div>
       </div>
 
       {/* เวลา */}
