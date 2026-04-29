@@ -597,13 +597,19 @@ let allEmployees = []
 // EMPLOYEES — load จาก Supabase
 // ============================================================
 async function loadEmployees() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/employees?select=id,employee_code,full_name_th,nickname,role,line_user_id&employment_status=neq.terminated&deleted_at=is.null&order=employee_code.asc`, {
+  const url = `${SUPABASE_URL}/rest/v1/employees?select=id,employee_code,full_name_th,nickname,role,line_user_id&deleted_at=is.null&order=employee_code.asc`
+  const res = await fetch(url, {
+    method: 'GET',
     headers: {
       'apikey': SUPABASE_ANON_KEY,
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
     }
   })
-  if (!res.ok) throw new Error('Load employees failed')
+  if (!res.ok) {
+    const errBody = await res.text()
+    throw new Error(`Load employees failed: ${res.status} ${errBody}`)
+  }
   return await res.json()
 }
 
