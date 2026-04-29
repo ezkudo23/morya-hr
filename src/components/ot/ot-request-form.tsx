@@ -126,15 +126,15 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
         </div>
       </div>
 
-      {/* เวลา */}
-      <div className="grid grid-cols-2 gap-2">
+        {/* เวลา */}
+        <div className="space-y-3">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-gray-500">เวลาเริ่ม</label>
           <input
             type="time"
             value={startTime}
             onChange={e => setStartTime(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
         <div className="space-y-1.5">
@@ -143,7 +143,7 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
             type="time"
             value={endTime}
             onChange={e => setEndTime(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
       </div>
