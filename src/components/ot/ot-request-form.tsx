@@ -86,7 +86,7 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
 
   // ─── Form ─────────────────────────────────────
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
 
       {/* Error */}
       {result && !result.success && (
@@ -102,10 +102,10 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
         </div>
       )}
 
-{/* วันที่ */}
-      <div className="space-y-1.5">
+      {/* วันที่ */}
+      <div className="w-full space-y-1.5">
         <label className="text-xs font-medium text-gray-500">วันที่ทำ OT</label>
-        <div className="relative">
+        <div className="relative w-full">
           <input
             type="date"
             value={workDate}
@@ -115,49 +115,45 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
           />
           <div className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white flex items-center justify-between">
             <span className="text-gray-900">
-              {workDate
-                ? new Date(workDate).toLocaleDateString('th-TH', {
-                    year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
-                  })
-                : 'เลือกวันที่'}
+              {workDate ? thaiDate(workDate) : 'เลือกวันที่'}
             </span>
-            <span className="text-gray-400 text-xs">📅</span>
+            <span className="text-gray-400 text-xs flex-shrink-0 ml-2">📅</span>
           </div>
         </div>
       </div>
 
-        {/* เวลา */}
-        <div className="space-y-3">
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-gray-500">เวลาเริ่ม</label>
-          <input
-            type="time"
-            value={startTime}
-            onChange={e => setStartTime(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-gray-500">เวลาสิ้นสุด</label>
-          <input
-            type="time"
-            value={endTime}
-            onChange={e => setEndTime(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
-          />
-        </div>
+      {/* เวลาเริ่ม */}
+      <div className="w-full space-y-1.5">
+        <label className="text-xs font-medium text-gray-500">เวลาเริ่ม</label>
+        <input
+          type="time"
+          value={startTime}
+          onChange={e => setStartTime(e.target.value)}
+          className="block w-full min-w-0 border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+      </div>
+
+      {/* เวลาสิ้นสุด */}
+      <div className="w-full space-y-1.5">
+        <label className="text-xs font-medium text-gray-500">เวลาสิ้นสุด</label>
+        <input
+          type="time"
+          value={endTime}
+          onChange={e => setEndTime(e.target.value)}
+          className="block w-full min-w-0 border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
       </div>
 
       {/* แสดงชั่วโมง */}
       {hours > 0 && (
-        <div className="bg-blue-50 rounded-xl px-4 py-2.5 flex items-center justify-between">
+        <div className="w-full bg-blue-50 rounded-xl px-4 py-2.5 flex items-center justify-between">
           <span className="text-xs text-blue-600">รวม OT</span>
           <span className="text-sm font-semibold text-blue-700">{hours} ชม.</span>
         </div>
       )}
 
       {/* เหตุผล */}
-      <div className="space-y-1.5">
+      <div className="w-full space-y-1.5">
         <label className="text-xs font-medium text-gray-500">
           เหตุผล <span className="text-gray-400">(ไม่บังคับ)</span>
         </label>
@@ -166,7 +162,7 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
           onChange={e => setReason(e.target.value)}
           placeholder="ระบุเหตุผลการทำ OT..."
           rows={3}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
+          className="block w-full min-w-0 border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
         />
       </div>
 
