@@ -52,19 +52,19 @@ VALUES
    'MR-001', 'อมร เกียรติคุณรัตน์', 'Amorn Kiatkunnarat', 'เฮีย', '1329900065234',
    'owner', 'director_salary', 'active',
    '98a65ba3-f5e1-4f6c-b7a6-83814f09bce5', NULL,
-   0, '2014-10-21', NULL, NULL, NULL, true),
+   20000, '2014-10-21', NULL, NULL, NULL, true),
 
   ('b7c81025-09fc-4b30-a23b-0f273441c7b0',
    'MR-002', 'ณภิญา ลีลาอภิฤดี', NULL, 'ไนซ์', '1329900159263',
    'owner_delegate', 'director_salary', 'active',
    '98a65ba3-f5e1-4f6c-b7a6-83814f09bce5', NULL,
-   0, '2014-10-21', NULL, NULL, NULL, true),
+   20000, '2014-10-21', NULL, NULL, NULL, true),
 
   ('3669abbe-038b-4b5b-b2c2-38ab88f64873',
    'MR-003', 'ศศิ เกียรติคุณรัตน์', NULL, 'จิว', '1329900201529',
    'owner_delegate', 'director_salary', 'active',
    '98a65ba3-f5e1-4f6c-b7a6-83814f09bce5', NULL,
-   0, '2014-10-21', NULL, NULL, NULL, true);
+   30000, '2014-10-21', NULL, NULL, NULL, true);
 
 -- Supervisors
 INSERT INTO employees (id, employee_code, full_name_th, full_name_en, nickname, tax_id,
