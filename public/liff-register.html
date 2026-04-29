@@ -803,27 +803,15 @@ async function init() {
 
   } catch (err) {
     console.error('Init error:', err)
-    // Fallback: dev mode without LIFF
-    lineProfile = {
-      userId: 'U_DEV_' + Date.now(),
-      displayName: 'Dev User (No LIFF)',
-      pictureUrl: null
-    }
 
-    document.getElementById('avatarWrap').innerHTML = `<div class="profile-avatar-placeholder">🧑‍💻</div>`
-    document.getElementById('profileName').textContent = lineProfile.displayName
-    document.getElementById('profileUid').textContent = lineProfile.userId
-    document.getElementById('devNotice').classList.remove('hidden')
-    document.getElementById('profileCard').classList.add('visible')
+    // แสดง error จริงบนหน้าจอ
+    const errMsg = err?.message || err?.toString() || 'Unknown error'
+    const errCode = err?.code || ''
+    document.getElementById('errorMsg').innerHTML =
+      `<b>LIFF Init Error</b><br>${errCode ? '[' + errCode + '] ' : ''}${errMsg}`
+    showScreen('screenError')
+    return
 
-    try {
-      allEmployees = await loadEmployees()
-      renderEmployees(allEmployees)
-    } catch(e) {
-      renderEmployees([])
-    }
-
-    showScreen('screenMain')
   }
 }
 
