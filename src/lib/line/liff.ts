@@ -6,7 +6,7 @@ export async function initLiff(): Promise<void> {
   if (isInitialized) return
 
   await liff.init({
-    liffId: process.env.NEXT_PUBLIC_LIFF_ID!,
+      liffId: process.env.NEXT_PUBLIC_LIFF_ID || '2009898155-F3QN9nis',
   })
 
   isInitialized = true
