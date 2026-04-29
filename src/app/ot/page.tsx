@@ -91,7 +91,7 @@ export default function OtPage() {
       </div>
 
       {/* Content */}
-      <div className="px-4 py-4 max-w-md mx-auto">
+      <div className="px-4 py-4 max-w-md mx-auto w-full overflow-hidden">
 
         {/* Tab: Request */}
         {tab === 'request' && (
