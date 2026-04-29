@@ -7,8 +7,8 @@ import { useState } from 'react'
 import { OT_TYPE_LABELS, SubmitOtPayload, SubmitOtResult } from '@/hooks/use-ot'
 
 interface OtRequestFormProps {
-  employeeId:  string
-  onSubmit:    (payload: SubmitOtPayload) => Promise<SubmitOtResult>
+  employeeId:   string
+  onSubmit:     (payload: SubmitOtPayload) => Promise<SubmitOtResult>
   isSubmitting: boolean
 }
 
@@ -25,11 +25,11 @@ const ERROR_MESSAGES: Record<string, string> = {
 export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestFormProps) {
   const today = new Date().toISOString().split('T')[0]
 
-  const [workDate,   setWorkDate]   = useState(today)
-  const [startTime,  setStartTime]  = useState('')
-  const [endTime,    setEndTime]    = useState('')
-  const [reason,     setReason]     = useState('')
-  const [result,     setResult]     = useState<SubmitOtResult | null>(null)
+  const [workDate,  setWorkDate]  = useState(today)
+  const [startTime, setStartTime] = useState('')
+  const [endTime,   setEndTime]   = useState('')
+  const [reason,    setReason]    = useState('')
+  const [result,    setResult]    = useState<SubmitOtResult | null>(null)
 
   const hours = (() => {
     if (!startTime || !endTime) return 0
@@ -38,6 +38,11 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
     const diff = (eh * 60 + em) - (sh * 60 + sm)
     return diff > 0 ? Math.round(diff / 60 * 10) / 10 : 0
   })()
+
+  const thaiDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString('th-TH', {
+      year: 'numeric', month: 'long', day: 'numeric', weekday: 'long',
+    })
 
   const handleSubmit = async () => {
     if (!workDate || !startTime || !endTime) return
@@ -56,14 +61,15 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
     }
   }
 
-  // Success state
+  // ─── Success ─────────────────────────────────
   if (result?.success) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-2xl px-5 py-6 text-center space-y-2">
         <p className="text-2xl">✅</p>
         <p className="text-sm font-semibold text-green-800">ส่งคำขอ OT สำเร็จ</p>
         <p className="text-xs text-green-600">
-          {result.ot_hours} ชม. · {result.ot_type ? OT_TYPE_LABELS[result.ot_type] : ''}
+          {result.ot_hours} ชม.
+          {result.ot_type ? ` · ${OT_TYPE_LABELS[result.ot_type]}` : ''}
         </p>
         <p className="text-xs text-green-500">
           OT สัปดาห์นี้รวม {result.week_ot_total} ชม.
@@ -78,6 +84,7 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
     )
   }
 
+  // ─── Form ─────────────────────────────────────
   return (
     <div className="space-y-4">
 
@@ -89,7 +96,7 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
           </p>
           {result.error === 'OT_WEEKLY_CAP_EXCEEDED' && (
             <p className="text-xs text-red-500 mt-1">
-              ขอได้อีกสูงสุด {36 - (result as any).current_week_ot} ชม.สัปดาห์นี้
+              ขอได้อีกสูงสุด {36 - ((result as any).current_week_ot ?? 0)} ชม.สัปดาห์นี้
             </p>
           )}
         </div>
@@ -103,19 +110,24 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
           value={workDate}
           max={today}
           onChange={e => setWorkDate(e.target.value)}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 appearance-none"
         />
+        {workDate && (
+          <p className="text-xs text-gray-400 px-1">
+            {thaiDate(workDate)}
+          </p>
+        )}
       </div>
 
       {/* เวลา */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2">
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-gray-500">เวลาเริ่ม</label>
           <input
             type="time"
             value={startTime}
             onChange={e => setStartTime(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
         <div className="space-y-1.5">
@@ -124,7 +136,7 @@ export function OtRequestForm({ employeeId, onSubmit, isSubmitting }: OtRequestF
             type="time"
             value={endTime}
             onChange={e => setEndTime(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full border border-gray-200 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
           />
         </div>
       </div>
