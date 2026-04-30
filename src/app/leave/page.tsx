@@ -1,11 +1,9 @@
 // app/leave/page.tsx
-// หน้าหลัก Leave — LIFF Staff view
-// รวม LeaveBalanceCard + LeaveRequestForm
-
 'use client'
 
 import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
+import { useLiff } from '@/components/providers/liff-provider'
 import { useLeave, LeaveType } from '@/hooks/use-leave'
 import { LeaveBalanceCard } from '@/components/leave/leave-balance-card'
 import { LeaveRequestForm } from '@/components/leave/leave-request-form'
@@ -13,18 +11,15 @@ import { LeaveRequestForm } from '@/components/leave/leave-request-form'
 type View = 'balance' | 'form'
 
 export default function LeavePage() {
-  const { employee, isLoading: authLoading } = useAuth()
-  const [view, setView]               = useState<View>('balance')
+  const { profile, isReady } = useLiff()
+  const { employee, isLoading: authLoading } = useAuth(
+    isReady ? (profile?.accessToken ?? null) : undefined
+  )
+  const [view, setView] = useState<View>('balance')
   const [selectedType, setSelectedType] = useState<LeaveType | null>(null)
 
-  const {
-    balance,
-    loadingBalance,
-    submitting,
-    submitLeave,
-  } = useLeave(employee?.id ?? null)
-    
-  // ─── Loading ──────────────────────────────────
+  const { balance, loadingBalance, submitting, submitLeave } = useLeave(employee?.id ?? null)
+
   if (authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -33,7 +28,6 @@ export default function LeavePage() {
     )
   }
 
-  // ─── No session ───────────────────────────────
   if (!employee) {
     return (
       <div className="flex items-center justify-center min-h-screen px-6">
@@ -45,7 +39,6 @@ export default function LeavePage() {
     )
   }
 
-  // ─── PC Staff — ไม่มีสิทธิ์ลา ─────────────────
   if (employee.role === 'pc_staff') {
     return (
       <div className="flex items-center justify-center min-h-screen px-6">
@@ -57,7 +50,6 @@ export default function LeavePage() {
     )
   }
 
-  // ─── Select leave type → go to form ──────────
   const handleSelectType = (type: LeaveType) => {
     setSelectedType(type)
     setView('form')
@@ -68,7 +60,6 @@ export default function LeavePage() {
     setView('balance')
   }
 
-  // ─── Offline banner ───────────────────────────
   const OfflineBanner = () => {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       return (
@@ -78,9 +69,7 @@ export default function LeavePage() {
           </div>
           <div>
             <p className="text-sm font-medium text-amber-800">ไม่มีสัญญาณอินเตอร์เน็ต</p>
-            <p className="text-xs text-amber-600 mt-0.5">
-              ไม่สามารถขอลาได้ตอนนี้ — กลับมาใหม่เมื่อมีสัญญาณ
-            </p>
+            <p className="text-xs text-amber-600 mt-0.5">ไม่สามารถขอลาได้ตอนนี้ — กลับมาใหม่เมื่อมีสัญญาณ</p>
           </div>
         </div>
       )
@@ -88,11 +77,8 @@ export default function LeavePage() {
     return null
   }
 
-  // ─── Render ───────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50">
-
-      {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
         {view === 'form' && (
           <button
@@ -110,20 +96,13 @@ export default function LeavePage() {
           {view === 'balance' && balance && (
             <p className="text-xs text-gray-400 mt-0.5">
               {employee.nickname ?? employee.code} · ปี {balance.year + 543}
-              {balance.is_probation && (
-                <span className="ml-2 text-amber-500">ทดลองงาน</span>
-              )}
+              {balance.is_probation && <span className="ml-2 text-amber-500">ทดลองงาน</span>}
             </p>
           )}
         </div>
       </div>
-
-      {/* Offline banner */}
       <OfflineBanner />
-
-      {/* Content */}
       <div className="px-4 py-4 max-w-md mx-auto">
-
         {view === 'balance' && (
           <LeaveBalanceCard
             balances={balance?.balances ?? []}
@@ -133,7 +112,6 @@ export default function LeavePage() {
             onSelectType={handleSelectType}
           />
         )}
-
         {view === 'form' && selectedType && (
           <LeaveRequestForm
             employeeId={employee.id}
@@ -144,7 +122,6 @@ export default function LeavePage() {
             isSubmitting={submitting}
           />
         )}
-
       </div>
     </div>
   )
