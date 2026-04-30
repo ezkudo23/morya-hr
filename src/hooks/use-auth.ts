@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { getLiffProfile } from '@/lib/line/liff'
+import { useLiff } from '@/components/providers/liff-provider'
 
 type Employee = {
   id: string
@@ -22,15 +22,18 @@ type AuthState = {
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 
 export function useAuth(): AuthState {
+  const { profile, isReady } = useLiff()
   const [employee, setEmployee] = useState<Employee | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    // รอ LIFF ready ก่อน
+    if (!isReady) return
+
     async function authenticate() {
       try {
         const supabase = createClient()
-
         const { data: { session } } = await supabase.auth.getSession()
 
         if (session) {
@@ -46,8 +49,7 @@ export function useAuth(): AuthState {
           return
         }
 
-        const profile = await getLiffProfile()
-
+        // ใช้ profile จาก liff-provider ไม่เรียก LIFF ซ้ำ
         if (!profile?.accessToken) {
           setError('ไม่สามารถ login ด้วย LINE ได้')
           setIsLoading(false)
@@ -56,9 +58,7 @@ export function useAuth(): AuthState {
 
         const res = await fetch(`${SUPABASE_URL}/functions/v1/line-auth`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accessToken: profile.accessToken }),
         })
 
@@ -93,7 +93,7 @@ export function useAuth(): AuthState {
     }
 
     authenticate()
-  }, [])
+  }, [isReady, profile])
 
   return {
     employee,
