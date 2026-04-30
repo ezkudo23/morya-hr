@@ -38,12 +38,17 @@ export function LiffProvider({ children }: { children: React.ReactNode }) {
         setProfile(userProfile)
         setIsReady(true)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'LIFF init failed')
+        const message = err instanceof Error ? err.message : 'LIFF init failed'
+        // กรอง LIFF warning ปกติออก ไม่ set error
+        if (!message.includes('not related to the endpoint')) {
+          setError(message)
+        }
+        // ให้ app render ต่อได้แม้ init fail
+        setIsReady(true)
       } finally {
         setIsLoading(false)
       }
     }
-
     init()
   }, [])
 
