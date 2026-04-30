@@ -1,18 +1,16 @@
 'use client'
 
 import { useLiff } from '@/components/providers/liff-provider'
+import { useAuth } from '@/hooks/use-auth'
 
-interface LoginScreenProps {
-  isLoading?: boolean
-  error?: string | null
-}
+export function LoginScreen() {
+  const { isLoading: liffLoading, error: liffError } = useLiff()
+  const { isLoading: authLoading, error: authError } = useAuth()
 
-export function LoginScreen({ isLoading, error }: LoginScreenProps) {
-  const { isLoading: liffLoading } = useLiff()
+  const isLoading = liffLoading || authLoading
+  const error = liffError ?? authError
 
-  const loading = isLoading || liffLoading
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white">
         <div className="flex flex-col items-center gap-4">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { getLiffProfile } from '@/lib/line/liff'
 
 type Employee = {
   id: string
@@ -20,7 +21,7 @@ type AuthState = {
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 
-export function useAuth(accessToken?: string | null): AuthState {
+export function useAuth(): AuthState {
   const [employee, setEmployee] = useState<Employee | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,6 +30,7 @@ export function useAuth(accessToken?: string | null): AuthState {
     async function authenticate() {
       try {
         const supabase = createClient()
+
         const { data: { session } } = await supabase.auth.getSession()
 
         if (session) {
@@ -44,15 +46,20 @@ export function useAuth(accessToken?: string | null): AuthState {
           return
         }
 
-        if (!accessToken) {
+        const profile = await getLiffProfile()
+
+        if (!profile?.accessToken) {
+          setError('ไม่สามารถ login ด้วย LINE ได้')
           setIsLoading(false)
           return
         }
 
         const res = await fetch(`${SUPABASE_URL}/functions/v1/line-auth`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accessToken }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ accessToken: profile.accessToken }),
         })
 
         if (!res.ok) {
@@ -86,7 +93,12 @@ export function useAuth(accessToken?: string | null): AuthState {
     }
 
     authenticate()
-  }, [accessToken])
+  }, [])
 
-  return { employee, isLoading, isAuthenticated: !!employee, error }
+  return {
+    employee,
+    isLoading,
+    isAuthenticated: !!employee,
+    error,
+  }
 }

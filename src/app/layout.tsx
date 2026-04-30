@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next'
 import { IBM_Plex_Sans_Thai } from 'next/font/google'
 import './globals.css'

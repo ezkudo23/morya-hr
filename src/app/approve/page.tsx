@@ -1,9 +1,10 @@
 // app/approve/page.tsx
+// หน้าหลัก Supervisor/HR/Owner — อนุมัติ Leave + OT
+
 'use client'
 
 import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { useLiff } from '@/components/providers/liff-provider'
 import { useLeave } from '@/hooks/use-leave'
 import { useOt } from '@/hooks/use-ot'
 import { LeaveApproveList } from '@/components/leave/leave-approve-list'
@@ -12,12 +13,10 @@ import { OtApproveList } from '@/components/ot/ot-approve-list'
 const ALLOWED_ROLES = ['supervisor', 'hr_admin', 'owner', 'owner_delegate']
 
 export default function ApprovePage() {
-  const { profile, isReady } = useLiff()
-  const { employee, isLoading: authLoading } = useAuth(
-    isReady ? (profile?.accessToken ?? null) : undefined
-  )
+  const { employee, isLoading: authLoading } = useAuth()
   const { approveLeave, approving: approvingLeave } = useLeave(employee?.id ?? '')
-  const { approveOt, approving: approvingOt } = useOt(employee?.id ?? '')
+  const { approveOt, approving: approvingOt }       = useOt(employee?.id ?? '')
+
   const [tab, setTab] = useState<'leave' | 'ot'>('leave')
 
   if (authLoading) {
@@ -41,10 +40,16 @@ export default function ApprovePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+
+      {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 sticky top-0 z-10">
         <h1 className="text-base font-semibold text-gray-900">อนุมัติ</h1>
-        <p className="text-xs text-gray-400 mt-0.5">{employee.nickname ?? employee.code} · {employee.role}</p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          {employee.nickname ?? employee.code} · {employee.role}
+        </p>
       </div>
+
+      {/* Tabs */}
       <div className="bg-white border-b border-gray-100 px-4 flex gap-4">
         {(['leave', 'ot'] as const).map(t => (
           <button
@@ -52,20 +57,33 @@ export default function ApprovePage() {
             onClick={() => setTab(t)}
             className={[
               'py-3 text-sm font-medium border-b-2 transition-colors',
-              tab === t ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-400',
+              tab === t
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-400',
             ].join(' ')}
           >
             {t === 'leave' ? 'คำขอลา' : 'คำขอ OT'}
           </button>
         ))}
       </div>
+
+      {/* Content */}
       <div className="px-4 py-4 max-w-md mx-auto">
         {tab === 'leave' ? (
-          <LeaveApproveList approverId={employee.id} onApprove={approveLeave} isApproving={approvingLeave} />
+          <LeaveApproveList
+            approverId={employee.id}
+            onApprove={approveLeave}
+            isApproving={approvingLeave}
+          />
         ) : (
-          <OtApproveList approverId={employee.id} onApprove={approveOt} isApproving={approvingOt} />
+          <OtApproveList
+            approverId={employee.id}
+            onApprove={approveOt}
+            isApproving={approvingOt}
+          />
         )}
       </div>
+
     </div>
   )
 }

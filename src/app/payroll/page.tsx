@@ -1,8 +1,10 @@
+// app/payroll/page.tsx
+// หน้าหลัก Payroll — Finance/Owner run payroll + ดู summary
+
 'use client'
 
 import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
-import { useLiff } from '@/components/providers/liff-provider'
 import { createClient } from '@/lib/supabase/client'
 
 const ALLOWED_ROLES = ['owner', 'owner_delegate', 'hr_admin', 'finance']
@@ -26,21 +28,15 @@ interface RunResult {
 }
 
 export default function PayrollPage() {
-  // ✅ hooks อยู่ข้างใน component
-  const { profile, isReady } = useLiff()
-  const { employee, isLoading: authLoading } = useAuth(
-    isReady ? (profile?.accessToken ?? null) : undefined
-  )
+  const { employee, isLoading: authLoading } = useAuth()
   const supabase = createClient()
 
   const now = new Date()
   const [year,  setYear]  = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
   const [round, setRound] = useState(1)
-  const [running, setRunning] = useState(false)
-  const [result,  setResult]  = useState<RunResult | null>(null)
-
-
+  const [running, setRunning]   = useState(false)
+  const [result,  setResult]    = useState<RunResult | null>(null)
 
   const handleRun = async () => {
     if (!employee) return
