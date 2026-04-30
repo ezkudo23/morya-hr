@@ -16,7 +16,10 @@ export async function getLiffProfile() {
   await initLiff()
 
   if (!liff.isLoggedIn()) {
-    liff.login()
+    // เฉพาะใน LINE client เท่านั้นถึงจะ login
+    if (liff.isInClient()) {
+      liff.login()
+    }
     return null
   }
 
