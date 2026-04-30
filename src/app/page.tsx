@@ -8,7 +8,7 @@ export default function Home() {
   const { isLoading, isAuthenticated, employee, error } = useAuth()
 
   if (isLoading || error || !isAuthenticated) {
-    return <LoginScreen />
+    return <LoginScreen isLoading={isLoading} error={error} />
   }
 
   return (
